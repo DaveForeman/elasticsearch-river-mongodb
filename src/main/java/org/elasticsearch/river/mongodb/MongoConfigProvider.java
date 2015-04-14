@@ -149,11 +149,7 @@ public class MongoConfigProvider implements Callable<MongoConfig> {
         }
         List<ServerAddress> servers = new ArrayList<ServerAddress>();
         for (String server : definition.split(",")) {
-            try {
-                servers.add(new ServerAddress(server));
-            } catch (UnknownHostException uhEx) {
-                logger.warn("failed to execute bulk", uhEx);
-            }
+			servers.add(new ServerAddress(server));
         }
         return servers;
     }
