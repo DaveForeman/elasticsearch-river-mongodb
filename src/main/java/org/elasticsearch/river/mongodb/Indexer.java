@@ -114,7 +114,10 @@ class Indexer implements Runnable {
 
         Timestamp<?> lastTimestamp = entry.getOplogTimestamp();
         String type;
-        if (definition.isImportAllCollections()) {
+		if (definition.getDiscriminator() != null && !definition.getDiscriminator().isEmpty()) {
+			type = entry.getData().get(definition.getDiscriminator()).toString().toLowerCase();
+		}
+        else if (definition.isImportAllCollections()) {
             type = entry.getCollection();
         } else {
             type = definition.getTypeName();

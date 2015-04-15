@@ -101,6 +101,7 @@ public class MongoDBRiverDefinition {
     public final static String BULK_SIZE_FIELD = "bulk_size";
     public final static String BULK_TIMEOUT_FIELD = "bulk_timeout";
     public final static String CONCURRENT_BULK_REQUESTS_FIELD = "concurrent_bulk_requests";
+	public final static String TYPE_DISCRIMINATOR_FIELD = "type_discriminator";
 
     public final static String BULK_FIELD = "bulk";
     public final static String ACTIONS_FIELD = "actions";
@@ -151,6 +152,7 @@ public class MongoDBRiverDefinition {
     private final String statisticsTypeName;
     private final boolean importAllCollections;
     private final boolean disableIndexRefresh;
+	private final String discriminator;
     // index
     private final String indexName;
     private final String typeName;
@@ -202,6 +204,7 @@ public class MongoDBRiverDefinition {
         private String statisticsTypeName;
         private boolean importAllCollections;
         private boolean disableIndexRefresh;
+		private String discriminator = "";
 
         // index
         private String indexName;
@@ -430,6 +433,11 @@ public class MongoDBRiverDefinition {
         public MongoDBRiverDefinition build() {
             return new MongoDBRiverDefinition(this);
         }
+		
+		public Builder discriminator(String discriminator) {
+			this.discriminator = discriminator;
+			return this;
+		}
     }
 
     static class Bulk {
@@ -654,6 +662,11 @@ public class MongoDBRiverDefinition {
 
                     builder.excludeFields(excludeFields);
                 }
+				
+				if (mongoOptionsSettings.containsKey(TYPE_DISCRIMINATOR_FIELD)) {
+					String discrim = mongoOptionsSettings.get(TYPE_DISCRIMINATOR_FIELD).toString();
+					builder.discriminator(discrim);
+				}
 
                 if (mongoOptionsSettings.containsKey(INITIAL_TIMESTAMP_FIELD)) {
                     BSONTimestamp timeStamp = null;
@@ -912,6 +925,7 @@ public class MongoDBRiverDefinition {
         this.statisticsTypeName = builder.statisticsTypeName;
         this.importAllCollections = builder.importAllCollections;
         this.disableIndexRefresh = builder.disableIndexRefresh;
+		this.discriminator = builder.discriminator;
 
         // index
         this.indexName = builder.indexName;
@@ -1073,6 +1087,10 @@ public class MongoDBRiverDefinition {
     public String getTypeName() {
         return typeName;
     }
+	
+	public String getDiscriminator() {
+		return discriminator;
+	}
 
     /*
      * Default throttle size is: 5 * bulk.bulkActions
